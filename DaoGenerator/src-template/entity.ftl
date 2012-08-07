@@ -118,14 +118,14 @@ property>${property.javaType} ${property.propertyName}<#if property_has_next>, <
 <#if property.notNull && complexTypes?seq_contains(property.propertyType)>
     /** Not-null value. */
 </#if>
-    public ${property.javaType} get${property.propertyName?cap_first}() {
+    public ${property.javaType} get${property.propertyNameCamelCase}() {
         return ${property.propertyName};
     }
 
 <#if property.notNull && complexTypes?seq_contains(property.propertyType)>
     /** Not-null value; ensure this value is available before it is saved to the database. */
 </#if>
-    public void set${property.propertyName?cap_first}(${property.javaType} ${property.propertyName}) {
+    public void set${property.propertyNameCamelCase}(${property.javaType} ${property.propertyName}) {
         this.${property.propertyName} = ${property.propertyName};
     }
 
@@ -177,7 +177,7 @@ property>${property.javaType} ${property.propertyName}<#if property_has_next>, <
 </#if>
         this.${toOne.name} = ${toOne.name};
 <#if toOne.useFkProperty>        
-        ${toOne.fkProperties[0].propertyName} = <#if !toOne.fkProperties[0].notNull>${toOne.name} == null ? null : </#if>${toOne.name}.get${toOne.targetEntity.pkProperty.propertyName?cap_first}();
+        ${toOne.fkProperties[0].propertyName} = <#if !toOne.fkProperties[0].notNull>${toOne.name} == null ? null : </#if>${toOne.name}.get${toOne.targetEntity.pkProperty.propertyNameCamelCase}();
         ${toOne.name}__resolvedKey = ${toOne.fkProperties[0].propertyName};
 <#else>
         ${toOne.name}__refreshed = true;

@@ -71,7 +71,7 @@ public class ${entity.classNameDao} extends AbstractDao<${entity.className}, ${e
     */
     public static class Properties {
 <#list entity.propertiesColumns as property>
-        public final static Property ${property.propertyName?cap_first} = new Property(${property_index}, ${property.javaType}.class, "${property.propertyName}", ${property.primaryKey?string}, "${property.columnName}");
+        public final static Property ${property.propertyNameCamelCase} = new Property(${property_index}, ${property.javaType}.class, "${property.propertyName}", ${property.primaryKey?string}, "${property.columnName}");
 </#list>
     };
 
@@ -126,14 +126,14 @@ as property>${property.columnName}<#if property_has_next>,</#if></#list>);");
 <#list entity.properties as property>
 <#if property.notNull || entity.protobuf>
 <#if entity.protobuf>
-        if(entity.has${property.propertyName?cap_first}()) {
-    </#if>        stmt.bind${toBindType[property.propertyType]}(${property_index + 1}, entity.get${property.propertyName?cap_first}()<#if
+        if(entity.has${property.propertyNameCamelCase}()) {
+    </#if>        stmt.bind${toBindType[property.propertyType]}(${property_index + 1}, entity.get${property.propertyNameCamelCase}()<#if
      property.propertyType == "Boolean"> ? 1l: 0l</#if><#if property.propertyType == "Date">.getTime()</#if>);
 <#if entity.protobuf>
         }
 </#if>
 <#else> <#-- nullable, non-protobuff -->
-        ${property.javaType} ${property.propertyName} = entity.get${property.propertyName?cap_first}();
+        ${property.javaType} ${property.propertyName} = entity.get${property.propertyNameCamelCase}();
         if (${property.propertyName} != null) {
             stmt.bind${toBindType[property.propertyType]}(${property_index + 1}, ${property.propertyName}<#if
  property.propertyType == "Boolean"> ? 1l: 0l</#if><#if property.propertyType == "Date">.getTime()</#if>);
@@ -145,7 +145,7 @@ as property>${property.columnName}<#if property_has_next>,</#if></#list>);");
 
         ${toOne.targetEntity.className} ${toOne.name} = entity.peak${toOne.name?cap_first}();
         if(${toOne.name} != null) {
-            ${toOne.targetEntity.pkProperty.javaType} ${toOne.name}__targetKey = ${toOne.name}.get${toOne.targetEntity.pkProperty.propertyName?cap_first}();
+            ${toOne.targetEntity.pkProperty.javaType} ${toOne.name}__targetKey = ${toOne.name}.get${toOne.targetEntity.pkProperty.propertyNameCamelCase}();
 <#if !toOne.targetEntity.pkProperty.notNull>
             if(${toOne.name}__targetKey != null) {
                 // TODO bind ${toOne.name}__targetKey
@@ -188,7 +188,7 @@ as property>${property.columnName}<#if property_has_next>,</#if></#list>);");
 <#list entity.properties as property>
 <#if !property.notNull>
         if (!cursor.isNull(offset + ${property_index})) {
-    </#if>        builder.set${property.propertyName?cap_first}(cursor.get${toCursorType[property.propertyType]}(offset + ${property_index}));
+    </#if>        builder.set${property.propertyNameCamelCase}(cursor.get${toCursorType[property.propertyType]}(offset + ${property_index}));
 <#if !property.notNull>
         }
 </#if>        
@@ -225,7 +225,7 @@ as property>${property.columnName}<#if property_has_next>,</#if></#list>);");
         throw new UnsupportedOperationException("Protobuf objects cannot be modified");
 <#else> 
 <#list entity.properties as property>
-        entity.set${property.propertyName?cap_first}(<#if !property.notNull>cursor.isNull(offset + ${property_index}) ? null : </#if><#if
+        entity.set${property.propertyNameCamelCase}(<#if !property.notNull>cursor.isNull(offset + ${property_index}) ? null : </#if><#if
             property.propertyType == "Byte">(byte) </#if><#if
             property.propertyType == "Date">new java.util.Date(</#if>cursor.get${toCursorType[property.propertyType]}(offset + ${property_index})<#if
             property.propertyType == "Boolean"> != 0</#if><#if
@@ -240,11 +240,11 @@ as property>${property.columnName}<#if property_has_next>,</#if></#list>);");
 <#if entity.pkProperty??>
 <#if entity.pkProperty.propertyType == "Long">
 <#if !entity.protobuf>
-        entity.set${entity.pkProperty.propertyName?cap_first}(rowId);
+        entity.set${entity.pkProperty.propertyNameCamelCase}(rowId);
 </#if>
         return rowId;
 <#else>
-        return entity.get${entity.pkProperty.propertyName?cap_first}();
+        return entity.get${entity.pkProperty.propertyNameCamelCase}();
 </#if>
 <#else>
         // Unsupported or missing PK type
@@ -257,7 +257,7 @@ as property>${property.columnName}<#if property_has_next>,</#if></#list>);");
     public ${entity.pkType} getKey(${entity.className} entity) {
 <#if entity.pkProperty??>
         if(entity != null) {
-            return entity.get${entity.pkProperty.propertyName?cap_first}();
+            return entity.get${entity.pkProperty.propertyNameCamelCase}();
         } else {
             return null;
         }
@@ -279,7 +279,7 @@ as property>${property.columnName}<#if property_has_next>,</#if></#list>);");
         if (${toMany.sourceEntity.className?uncap_first}_${toMany.name?cap_first}Query == null) {
             QueryBuilder<${toMany.targetEntity.className}> queryBuilder = queryBuilder();
 <#list toMany.targetProperties as property>
-            queryBuilder.where(Properties.${property.propertyName?cap_first}.eq(${property.propertyName}));
+            queryBuilder.where(Properties.${property.propertyNameCamelCase}.eq(${property.propertyName}));
 </#list>
 <#if toMany.order?has_content>
             queryBuilder.orderRaw("${toMany.order}");

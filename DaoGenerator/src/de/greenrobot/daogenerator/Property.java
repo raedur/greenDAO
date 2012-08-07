@@ -15,15 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with greenDAO Generator.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package de.greenrobot.daogenerator;
 
-/** Model class for an entity's property: a Java property mapped to a data base column. */
+/**
+ * Model class for an entity's property: a Java property mapped to a data base
+ * column.
+ */
 public class Property {
 
     public static class PropertyBuilder {
         private final Property property;
 
-        public PropertyBuilder(Schema schema, Entity entity, PropertyType propertyType, String propertyName) {
+        public PropertyBuilder(Schema schema, Entity entity, PropertyType propertyType,
+                String propertyName) {
             property = new Property(schema, entity, propertyType, propertyName);
         }
 
@@ -111,6 +116,7 @@ public class Property {
     private final Entity entity;
     private PropertyType propertyType;
     private final String propertyName;
+    private final String propertyNameCamelCase;
 
     private String columnName;
     private String columnType;
@@ -134,11 +140,16 @@ public class Property {
         this.schema = schema;
         this.entity = entity;
         this.propertyName = propertyName;
+        this.propertyNameCamelCase = capitalizeString(propertyName);
         this.propertyType = propertyType;
     }
 
     public String getPropertyName() {
         return propertyName;
+    }
+
+    public String getPropertyNameCamelCase() {
+        return propertyNameCamelCase;
     }
 
     public PropertyType getPropertyType() {
@@ -222,7 +233,8 @@ public class Property {
                 constraintBuilder.append(" AUTOINCREMENT");
             }
         }
-        // Always have String PKs NOT NULL because SQLite is pretty strange in this respect:
+        // Always have String PKs NOT NULL because SQLite is pretty strange in
+        // this respect:
         // One could insert multiple rows with NULL PKs
         if (notNull || (primaryKey && propertyType == PropertyType.String)) {
             constraintBuilder.append(" NOT NULL");
@@ -245,4 +257,25 @@ public class Property {
         return "Property " + propertyName + " of " + entity.getClassName();
     }
 
+    public static String capitalizeString(String string) {
+        char[] chars = string.toLowerCase().toCharArray();
+        StringBuilder sb = new StringBuilder();
+        boolean found = false;
+        for (int i = 0; i < chars.length; i++) {
+            if (!found && Character.isLetter(chars[i])) {
+                sb.append(Character.toUpperCase(chars[i]));
+                found = true;
+            } else if (Character.isWhitespace(chars[i]) || chars[i] == '_') { // You
+                                                                              // can
+                                                                              // add
+                                                                              // other
+                                                                              // chars
+                                                                              // here
+                found = false;
+            } else {
+                sb.append(Character.toLowerCase(chars[i]));
+            }
+        }
+        return sb.toString();
+    }
 }
