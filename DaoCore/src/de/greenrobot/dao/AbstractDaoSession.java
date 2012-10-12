@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import de.greenrobot.dao.async.AsyncSession;
+
 import android.database.sqlite.SQLiteDatabase;
 
 /**
@@ -183,6 +185,13 @@ public class AbstractDaoSession {
     /** Gets the SQLiteDatabase for custom database access. Not needed for greenDAO entities. */
     public SQLiteDatabase getDatabase() {
         return db;
+    }
+
+    /**
+     * Creates a new {@link AsyncSession} to issue asynchronous entity operations. See {@link AsyncSession} for details.
+     */
+    public AsyncSession startAsyncSession() {
+        return new AsyncSession(this);
     }
 
 }
